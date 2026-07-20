@@ -1,0 +1,450 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mesh-demo-1
+  labels:
+    app: mesh-demo
+    app.kubernetes.io/part-of: mesh-demo
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mesh-demo-2
+  labels:
+    app: mesh-demo
+    app.kubernetes.io/part-of: mesh-demo
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mesh-demo-3
+  labels:
+    app: mesh-demo
+    app.kubernetes.io/part-of: mesh-demo
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mesh-demo-4
+  labels:
+    app: mesh-demo
+    app.kubernetes.io/part-of: mesh-demo
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mesh-demo-5
+  labels:
+    app: mesh-demo
+    app.kubernetes.io/part-of: mesh-demo
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1
+  namespace: mesh-demo-1
+  labels:
+    app: app1
+    mesh-demo: "1"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app1
+  template:
+    metadata:
+      labels:
+        app: app1
+    spec:
+      containers:
+      - name: app1
+        image: harbor.luban.paulhome.local/mesh-demo/app1:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: APP_NAME
+          value: "App 1"
+        - name: APP_NAMESPACE
+          value: "mesh-demo-1"
+        - name: APP_PORT
+          value: "8080"
+        - name: OTHER_APPS
+          value: |
+            [{"name": "app2", "namespace": "mesh-demo-2", "host": "app2.mesh-demo-2.svc.cluster.local"}, {"name": "app3", "namespace": "mesh-demo-3", "host": "app3.mesh-demo-3.svc.cluster.local"}, {"name": "app4", "namespace": "mesh-demo-4", "host": "app4.mesh-demo-4.svc.cluster.local"}, {"name": "app5", "namespace": "mesh-demo-5", "host": "app5.mesh-demo-5.svc.cluster.local"}]
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1
+  namespace: mesh-demo-1
+  labels:
+    app: app1
+spec:
+  selector:
+    app: app1
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app1-route
+  namespace: mesh-demo-1
+spec:
+  hostnames:
+  - "app1.luban.paulhome.local"
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: luban-gateway
+    namespace: gateway
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: app1
+      port: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2
+  namespace: mesh-demo-2
+  labels:
+    app: app2
+    mesh-demo: "2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app2
+  template:
+    metadata:
+      labels:
+        app: app2
+    spec:
+      containers:
+      - name: app2
+        image: harbor.luban.paulhome.local/mesh-demo/app2:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: APP_NAME
+          value: "App 2"
+        - name: APP_NAMESPACE
+          value: "mesh-demo-2"
+        - name: APP_PORT
+          value: "8080"
+        - name: OTHER_APPS
+          value: |
+            [{"name": "app1", "namespace": "mesh-demo-1", "host": "app1.mesh-demo-1.svc.cluster.local"}, {"name": "app3", "namespace": "mesh-demo-3", "host": "app3.mesh-demo-3.svc.cluster.local"}, {"name": "app4", "namespace": "mesh-demo-4", "host": "app4.mesh-demo-4.svc.cluster.local"}, {"name": "app5", "namespace": "mesh-demo-5", "host": "app5.mesh-demo-5.svc.cluster.local"}]
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2
+  namespace: mesh-demo-2
+  labels:
+    app: app2
+spec:
+  selector:
+    app: app2
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app2-route
+  namespace: mesh-demo-2
+spec:
+  hostnames:
+  - "app2.luban.paulhome.local"
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: luban-gateway
+    namespace: gateway
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: app2
+      port: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app3
+  namespace: mesh-demo-3
+  labels:
+    app: app3
+    mesh-demo: "3"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app3
+  template:
+    metadata:
+      labels:
+        app: app3
+    spec:
+      containers:
+      - name: app3
+        image: harbor.luban.paulhome.local/mesh-demo/app3:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: APP_NAME
+          value: "App 3"
+        - name: APP_NAMESPACE
+          value: "mesh-demo-3"
+        - name: APP_PORT
+          value: "8080"
+        - name: OTHER_APPS
+          value: |
+            [{"name": "app1", "namespace": "mesh-demo-1", "host": "app1.mesh-demo-1.svc.cluster.local"}, {"name": "app2", "namespace": "mesh-demo-2", "host": "app2.mesh-demo-2.svc.cluster.local"}, {"name": "app4", "namespace": "mesh-demo-4", "host": "app4.mesh-demo-4.svc.cluster.local"}, {"name": "app5", "namespace": "mesh-demo-5", "host": "app5.mesh-demo-5.svc.cluster.local"}]
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app3
+  namespace: mesh-demo-3
+  labels:
+    app: app3
+spec:
+  selector:
+    app: app3
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app3-route
+  namespace: mesh-demo-3
+spec:
+  hostnames:
+  - "app3.luban.paulhome.local"
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: luban-gateway
+    namespace: gateway
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: app3
+      port: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app4
+  namespace: mesh-demo-4
+  labels:
+    app: app4
+    mesh-demo: "4"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app4
+  template:
+    metadata:
+      labels:
+        app: app4
+    spec:
+      containers:
+      - name: app4
+        image: harbor.luban.paulhome.local/mesh-demo/app4:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: APP_NAME
+          value: "App 4"
+        - name: APP_NAMESPACE
+          value: "mesh-demo-4"
+        - name: APP_PORT
+          value: "8080"
+        - name: OTHER_APPS
+          value: |
+            [{"name": "app1", "namespace": "mesh-demo-1", "host": "app1.mesh-demo-1.svc.cluster.local"}, {"name": "app2", "namespace": "mesh-demo-2", "host": "app2.mesh-demo-2.svc.cluster.local"}, {"name": "app3", "namespace": "mesh-demo-3", "host": "app3.mesh-demo-3.svc.cluster.local"}, {"name": "app5", "namespace": "mesh-demo-5", "host": "app5.mesh-demo-5.svc.cluster.local"}]
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app4
+  namespace: mesh-demo-4
+  labels:
+    app: app4
+spec:
+  selector:
+    app: app4
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app4-route
+  namespace: mesh-demo-4
+spec:
+  hostnames:
+  - "app4.luban.paulhome.local"
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: luban-gateway
+    namespace: gateway
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: app4
+      port: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app5
+  namespace: mesh-demo-5
+  labels:
+    app: app5
+    mesh-demo: "5"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app5
+  template:
+    metadata:
+      labels:
+        app: app5
+    spec:
+      containers:
+      - name: app5
+        image: harbor.luban.paulhome.local/mesh-demo/app5:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: APP_NAME
+          value: "App 5"
+        - name: APP_NAMESPACE
+          value: "mesh-demo-5"
+        - name: APP_PORT
+          value: "8080"
+        - name: OTHER_APPS
+          value: |
+            [{"name": "app1", "namespace": "mesh-demo-1", "host": "app1.mesh-demo-1.svc.cluster.local"}, {"name": "app2", "namespace": "mesh-demo-2", "host": "app2.mesh-demo-2.svc.cluster.local"}, {"name": "app3", "namespace": "mesh-demo-3", "host": "app3.mesh-demo-3.svc.cluster.local"}, {"name": "app4", "namespace": "mesh-demo-4", "host": "app4.mesh-demo-4.svc.cluster.local"}]
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app5
+  namespace: mesh-demo-5
+  labels:
+    app: app5
+spec:
+  selector:
+    app: app5
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app5-route
+  namespace: mesh-demo-5
+spec:
+  hostnames:
+  - "app5.luban.paulhome.local"
+  parentRefs:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    name: luban-gateway
+    namespace: gateway
+  rules:
+  - backendRefs:
+    - group: ""
+      kind: Service
+      name: app5
+      port: 80
+
+---
+# CoreDNS NodeHosts entry for app1.luban.paulhome.local
+# Run: kubectl patch cm coredns -n kube-system --type json -p '[{"op":"add","path":"/data/app1.luban.paulhome.local","value":"192.168.48.111"}]'
+
+---
+# CoreDNS NodeHosts entry for app2.luban.paulhome.local
+# Run: kubectl patch cm coredns -n kube-system --type json -p '[{"op":"add","path":"/data/app2.luban.paulhome.local","value":"192.168.48.111"}]'
+
+---
+# CoreDNS NodeHosts entry for app3.luban.paulhome.local
+# Run: kubectl patch cm coredns -n kube-system --type json -p '[{"op":"add","path":"/data/app3.luban.paulhome.local","value":"192.168.48.111"}]'
+
+---
+# CoreDNS NodeHosts entry for app4.luban.paulhome.local
+# Run: kubectl patch cm coredns -n kube-system --type json -p '[{"op":"add","path":"/data/app4.luban.paulhome.local","value":"192.168.48.111"}]'
+
+---
+# CoreDNS NodeHosts entry for app5.luban.paulhome.local
+# Run: kubectl patch cm coredns -n kube-system --type json -p '[{"op":"add","path":"/data/app5.luban.paulhome.local","value":"192.168.48.111"}]'
+

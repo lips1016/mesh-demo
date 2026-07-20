@@ -1,0 +1,220 @@
+﻿kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: '5'
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"app3","mesh-demo":"3"},"name":"app3","namespace":"mesh-demo-3"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"app3"}},"template":{"metadata":{"labels":{"app":"app3"}},"spec":{"containers":[{"env":[{"name":"APP_NAME","value":"App 3"},{"name":"APP_NAMESPACE","value":"mesh-demo-3"},{"name":"APP_PORT","value":"8080"},{"name":"OTHER_APPS","value":"[{\"name\": \"app1\", \"namespace\": \"mesh-demo-1\", \"host\": \"app1.mesh-demo-1.svc.cluster.local\"}, {\"name\": \"app2\", \"namespace\": \"mesh-demo-2\", \"host\": \"app2.mesh-demo-2.svc.cluster.local\"}, {\"name\": \"app4\", \"namespace\": \"mesh-demo-4\", \"host\": \"app4.mesh-demo-4.svc.cluster.local\"}, {\"name\": \"app5\", \"namespace\": \"mesh-demo-5\", \"host\": \"app5.mesh-demo-5.svc.cluster.local\"}]\n"}],"image":"quay.io/paulwong6668/app3:ocp","imagePullPolicy":"Always","name":"app3","ports":[{"containerPort":8080}],"resources":{"limits":{"cpu":"200m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}}]}}}}
+  resourceVersion: '2505686988'
+  name: app3
+  uid: 9968122d-33ee-4394-89de-ea3911b3b1e7
+  creationTimestamp: '2026-06-23T07:42:08Z'
+  generation: 6
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:replicas': {}
+      subresource: scale
+    - manager: kubectl-client-side-apply
+      operation: Update
+      apiVersion: apps/v1
+      time: '2026-06-23T07:42:08Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:kubectl.kubernetes.io/last-applied-configuration': {}
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:mesh-demo': {}
+        'f:spec':
+          'f:progressDeadlineSeconds': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector': {}
+          'f:strategy':
+            'f:rollingUpdate':
+              .: {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+            'f:type': {}
+          'f:template':
+            'f:metadata':
+              'f:labels':
+                .: {}
+                'f:app': {}
+            'f:spec':
+              'f:containers':
+                'k:{"name":"app3"}':
+                  'f:image': {}
+                  'f:terminationMessagePolicy': {}
+                  .: {}
+                  'f:resources':
+                    .: {}
+                    'f:limits':
+                      .: {}
+                      'f:cpu': {}
+                      'f:memory': {}
+                    'f:requests':
+                      .: {}
+                      'f:cpu': {}
+                      'f:memory': {}
+                  'f:env':
+                    .: {}
+                    'k:{"name":"APP_NAME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"APP_NAMESPACE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"APP_PORT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"OTHER_APPS"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                  'f:terminationMessagePath': {}
+                  'f:imagePullPolicy': {}
+                  'f:ports':
+                    .: {}
+                    'k:{"containerPort":8080,"protocol":"TCP"}':
+                      .: {}
+                      'f:containerPort': {}
+                      'f:protocol': {}
+                  'f:name': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+    - manager: Mozilla
+      operation: Update
+      apiVersion: apps/v1
+      time: '2026-06-24T09:50:08Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:template':
+            'f:metadata':
+              'f:annotations':
+                .: {}
+                'f:openshift.openshift.io/restartedAt': {}
+                'f:sidecar.istio.io/inject': {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: apps/v1
+      time: '2026-06-24T09:51:20Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            'f:deployment.kubernetes.io/revision': {}
+        'f:status':
+          'f:availableReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:observedGeneration': {}
+          'f:readyReplicas': {}
+          'f:replicas': {}
+          'f:updatedReplicas': {}
+      subresource: status
+  namespace: mesh-demo-3
+  labels:
+    app: app3
+    mesh-demo: '3'
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app3
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: app3
+      annotations:
+        openshift.openshift.io/restartedAt: '2026-06-24T09:50:08.000Z'
+        sidecar.istio.io/inject: 'true'
+    spec:
+      containers:
+        - name: app3
+          image: 'quay.io/paulwong6668/app3:ocp'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: APP_NAME
+              value: App 3
+            - name: APP_NAMESPACE
+              value: mesh-demo-3
+            - name: APP_PORT
+              value: '8080'
+            - name: OTHER_APPS
+              value: |
+                [{"name": "app1", "namespace": "mesh-demo-1", "host": "app1.mesh-demo-1.svc.cluster.local"}, {"name": "app2", "namespace": "mesh-demo-2", "host": "app2.mesh-demo-2.svc.cluster.local"}, {"name": "app4", "namespace": "mesh-demo-4", "host": "app4.mesh-demo-4.svc.cluster.local"}, {"name": "app5", "namespace": "mesh-demo-5", "host": "app5.mesh-demo-5.svc.cluster.local"}]
+          resources:
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+status:
+  observedGeneration: 6
+  replicas: 2
+  updatedReplicas: 2
+  readyReplicas: 2
+  availableReplicas: 2
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2026-06-24T01:44:42Z'
+      lastTransitionTime: '2026-06-24T01:44:42Z'
+      reason: MinimumReplicasAvailable
+      message: Deployment has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2026-06-24T09:51:20Z'
+      lastTransitionTime: '2026-06-23T07:42:08Z'
+      reason: NewReplicaSetAvailable
+      message: ReplicaSet "app3-7d4bf69f66" has successfully progressed.
