@@ -1,0 +1,83 @@
+#!/bin/bash
+# traffic-generator.sh — Continuously generate traffic and monitor OpenShift Routes
+# Usage: ./traffic-generator.sh
+# Press Ctrl+C to stop
+
+# 定義 5 個 App 的 Route 網址 (請確認這些是您在 Route 中設定的 host)
+URLS=(
+  "http://app1.luban.paulhome.local"
+  "http://app2.luban.paulhome.local"
+  "http://app3.luban.paulhome.local"
+  "http://app4.luban.paulhome.local"
+  "http://app5.luban.paulhome.local"
+)
+
+APP_NAMES=("App 1" "App 2" "App 3" "App 4" "App 5")
+
+# 顏色定義
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║  OpenShift Route Traffic Generator & Monitor         ║${NC}"
+echo -e "${CYAN}║  Press Ctrl+C to stop                                ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
+echo ""
+
+# 統計計數器
+declare -A SUCCESS_COUNT
+declare -A FAIL_COUNT
+
+for i in "${!APP_NAMES[@]}"; do
+  SUCCESS_COUNT[$i]=0
+  FAIL_COUNT[$i]=0
+done
+
+while true; do
+  # 清除畫面，保持輸出乾淨
+  printf "\033[H\033[2J"
+  
+  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${CYAN}  Time: $(date '+%Y-%m-%d %H:%M:%S')${NC}"
+  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "  ${YELLOW}App Name\tStatus\t\tHTTP Code\tSuccess\tFailed${NC}"
+  echo -e "  -----------------------------------------------------------------------------"
+  
+  ALL_OK=true
+  
+  for i in "${!URLS[@]}"; do
+    URL="${URLS[$i]}"
+    NAME="${APP_NAMES[$i]}"
+    
+    # 使用 curl 發送請求，設定超時時間為 2 秒，只抓取 HTTP 狀態碼
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 "$URL")
+    
+    if [ "$HTTP_CODE" = "200" ]; then
+      ((SUCCESS_COUNT[$i]++))
+      echo -e "  ${NAME}\t${GREEN}[OK]${NC}\t\t${GREEN}${HTTP_CODE}${NC}\t\t${SUCCESS_COUNT[$i]}\t${FAIL_COUNT[$i]}"
+    else
+      ((FAIL_COUNT[$i]++))
+      # 如果 curl 失敗 (例如 DNS 解析失敗或 timeout)，HTTP_CODE 會是 000
+      if [ "$HTTP_CODE" = "000" ]; then
+         HTTP_CODE="ERR"
+      fi
+      echo -e "  ${NAME}\t${RED}[FAIL]${NC}\t\t${RED}${HTTP_CODE}${NC}\t\t${SUCCESS_COUNT[$i]}\t${FAIL_COUNT[$i]}"
+      ALL_OK=false
+    fi
+  done
+  
+  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  
+  if $ALL_OK; then
+    echo -e "${GREEN}  Overall Status: ALL HEALTHY — Traffic is flowing normally${NC}"
+  else
+    echo -e "${RED}  Overall Status: DEGRADED — Some routes are unreachable!${NC}"
+  fi
+  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  
+  # 暫停 1 秒後繼續下一次請求 (可依需求調整頻率)
+  sleep 1
+done
